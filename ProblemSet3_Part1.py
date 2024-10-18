@@ -52,7 +52,6 @@ headerLineString = lineList[0]
 #Print the contents of the headerLine
 print(headerLineString)
 
-
 # %% Task 4.2
 
 #Split the headerLineString into a list of header items based on commas
@@ -79,11 +78,6 @@ for item in lineList[1:]: #read from second line(exclude header)
     fleet = values[fleet_idx]
     #Adds info to the vesselDict dictionary
     vesselDict[mmsi] = fleet
-
-
-
-
-
 
 # %% Task 4.4 Using your dictionary
 vesselID = "440196000"
@@ -142,25 +136,20 @@ for loiteringItem in loiteringLines[1:]:
     end_long = float(loiteringData[end_long_idx])
 
     # Create boolean condition for equator crossing
-    # create first boolean: start_bool is True if start_lat is positive
-    start_bool = start_lat < 0
-    # end_bool is True if end_lat is positive
-    end_bool = end_lat > 0
-    # cross is True if start_bool and end_bool have different values
-    # if cross = True, the ship has crossed equator
-    cross = start_bool == end_bool 
+    # lat_bool is true is ship starts below equator and ends above equator
+    lat_bool = start_lat < 0 < end_lat
 
     # Create second boolean condition for longitude
     start_long_bool = 145 < start_long < 155
 
-    if cross and start_long_bool: 
+    # If both booleans are true, append to empty list
+    if lat_bool & start_long_bool:
         loitering_booleans_list.append(transshipment_mmsi)
 
 
 
 
-
-#%% 
+#%% Task 5: Check values and print if meet criteria 
 for mmsi in loitering_booleans_list:
     # retrieving flag values associated with the key mmsi from vesslDict into new list vessel_info 
     vessel_info = vesselDict.get(mmsi)
@@ -170,23 +159,3 @@ for mmsi in loitering_booleans_list:
 if not loitering_booleans_list:
     print("No vessels met criteria")
 
-
-
-
-#%% scrap 
-#Create an empty dictionary
-vesselDict = {}
-#Iterate through all lines (except the header) in the data file:
-for item in lineList[1:]: #read from second line(exclude header)
-    #Split the data into values
-    values = item.split(',')
-    #Extract the mmsi value from the list using the mmsi_idx value
-    mmsi = values[mmsi_idx]
-    #Extract the fleet value
-    fleet = values[fleet_idx]
-    #Adds info to the vesselDict dictionary
-    vesselDict[mmsi] = fleet
-
-# more scrap 
-start_bool == end_bool
-# %%
