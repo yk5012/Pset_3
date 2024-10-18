@@ -85,8 +85,108 @@ for item in lineList[1:]: #read from second line(exclude header)
 
 
 
-# %% Task 4.4
+# %% Task 4.4 Using your dictionary
 vesselID = "440196000"
 print("Vessel #" + vesselID + " flies the flag of " + vesselDict["440196000"])
 
+
+
+# %% Task 5.1 open file and store header line in string
+#Create a Python file object, i.e., a link to the file's contents
+loiteringFile = open(file='data/raw/loitering_events_20180723.csv', mode='r')
+
+#Read the entire contents into a list object
+loiteringLines = loiteringFile.readlines()
+
+#Release the link to the file objects (now that we have all its contents)
+loiteringFile.close() #Close the file
+
+#Save the contents of the first line in the list of lines to the variable "loiteringHeader"
+loiteringHeader = loiteringLines[0]
+
+#Print the contents of the loiteringHeader
+print(loiteringHeader)
+
+# %% Task 5.2 split header names and obtain index  
+
+#Split the loiteringHeader into a list of header items based on commas
+loiteringHeaderItems = loiteringHeader.split(',')
+
+#List the index of relevant header items
+transshipment_mmsi_idx = loiteringHeaderItems.index("transshipment_mmsi")
+start_lat_idx = loiteringHeaderItems.index("starting_latitude")
+start_long_idx = loiteringHeaderItems.index("starting_longitude")
+end_lat_idx = loiteringHeaderItems.index("ending_latitude")
+end_long_idx = loiteringHeaderItems.index("ending_longitude")
+
+#Print the values
+print(transshipment_mmsi_idx,start_lat_idx,start_long_idx,end_lat_idx,end_long_idx )
+
+
+#%% Task 5.3 
+
+# Create empty list 
+loitering_booleans_list = []
+
+# Iterate through all lines starting on the second line 
+for loiteringItem in loiteringLines[1:]:
+    #Split each line by comma
+    loiteringData = loiteringItem.split(",")
+
+    #Store variables using the previously derived index values so that 
+    #even if the column orders change, the code will still work 
+    transshipment_mmsi = loiteringData[transshipment_mmsi_idx]
+    start_lat = float(loiteringData[start_lat_idx])
+    start_long = float(loiteringData[start_long_idx])
+    end_lat = float(loiteringData[end_lat_idx])
+    end_long = float(loiteringData[end_long_idx])
+
+    # Create boolean condition for equator crossing
+    # create first boolean: start_bool is True if start_lat is positive
+    start_bool = start_lat < 0
+    # end_bool is True if end_lat is positive
+    end_bool = end_lat > 0
+    # cross is True if start_bool and end_bool have different values
+    # if cross = True, the ship has crossed equator
+    cross = start_bool == end_bool 
+
+    # Create second boolean condition for longitude
+    start_long_bool = 145 < start_long < 155
+
+    if cross and start_long_bool: 
+        loitering_booleans_list.append(transshipment_mmsi)
+
+
+
+
+
+#%% 
+for mmsi in loitering_booleans_list:
+    # retrieving flag values associated with the key mmsi from vesslDict into new list vessel_info 
+    vessel_info = vesselDict.get(mmsi)
+    #performing initial if check to run for each iteration in vessel_info
+    if vessel_info:
+        print("Vessel # " + mmsi + " flies the flag of " + vesselDict[mmsi])
+if not loitering_booleans_list:
+    print("No vessels met criteria")
+
+
+
+
+#%% scrap 
+#Create an empty dictionary
+vesselDict = {}
+#Iterate through all lines (except the header) in the data file:
+for item in lineList[1:]: #read from second line(exclude header)
+    #Split the data into values
+    values = item.split(',')
+    #Extract the mmsi value from the list using the mmsi_idx value
+    mmsi = values[mmsi_idx]
+    #Extract the fleet value
+    fleet = values[fleet_idx]
+    #Adds info to the vesselDict dictionary
+    vesselDict[mmsi] = fleet
+
+# more scrap 
+start_bool == end_bool
 # %%
